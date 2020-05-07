@@ -1,0 +1,7 @@
+#日志配置
+logcfg:
+  level: trace               #日志等级
+  filesize: 10             #日志文件最大存储（M）
+  backendname: rpc          #后端名
+  servicename: service01        #服务名
+  logfield: 01111           #日志域控制，日期-时间-微秒-pid-goroutine id(0：否，1：是)

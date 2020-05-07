@@ -1,7 +1,6 @@
-package center
+package main
 
 import (
-	"center/config"
 	"context"
 	"fmt"
 	"github.com/docker/libkv/store"
@@ -28,7 +27,7 @@ type Center interface {
 	Close()
 }
 
-func RegisterCenterMonitor(center Center, key string, config config.Config, ctx context.Context, cancel context.CancelFunc,notifyCh chan config.Config) error {
+func RegisterCenterMonitor(center Center, key string, config Config, ctx context.Context, cancel context.CancelFunc,notifyCh chan Config) error {
 	stopch := make(chan struct{})
 	change := make(chan struct{})
 	watchchan := make(<-chan *store.KVPair)

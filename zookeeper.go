@@ -1,4 +1,4 @@
-package center
+package main
 
 import (
     "github.com/docker/libkv/store"

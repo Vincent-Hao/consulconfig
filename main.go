@@ -1,8 +1,6 @@
 package main
 
 import (
-	"center/center"
-	"center/config"
 	"context"
 	"github.com/sirupsen/logrus"
 )
@@ -10,20 +8,32 @@ import (
 var consuladdr []string = []string{"127.0.0.1:8500"}
 
 func main() {
-	consul,err := center.NewConsul(consuladdr,nil)
-	if err != nil{
+	consul, err := NewConsul(consuladdr, nil)
+	if err != nil {
 		logrus.Error(err)
 		return
 	}
-	config := new(config.RPCConfig)
-	key := "rpcx/config.yaml"
-	ctx,cancel:=context.WithCancel(context.Background())
-	err = center.RegisterCenterMonitor(consul,key,config,ctx,cancel)
-	if err!= nil{
+	change := make(chan Config)
+	defer close(change)
+	config := new(LogConfig)
+	key := "rpc/config.yaml"
+	ctx, cancel := context.WithCancel(context.Background())
+	go func() {
+		err = RegisterCenterMonitor(consul, key, config, ctx, cancel, change)
+	}()
+	if err != nil {
+		cancel()
 		logrus.Error(err)
+		return
 	}
-	select{
+BreakPoint:
+	select {
 	case <-ctx.Done():
 		return
+	case conf := <-change:
+		if conf == nil {
+			break BreakPoint
+		}
+		logrus.Println(conf)
 	}
 }
